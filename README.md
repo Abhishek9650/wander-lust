@@ -20,6 +20,10 @@ Wanderlust is a web application similar to Airbnb, where users can browse, book,
 - **Frontend:** EJS templates, HTML, CSS
 - **Other:** Nodemon, dotenv
 
+## 🚀 Live Demo
+
+🔗 [Wanderlust on Render](https://delta-project-5ym6.onrender.com)
+
 ## Installation
 
 1. Clone the repository:
