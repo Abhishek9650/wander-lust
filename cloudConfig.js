@@ -12,6 +12,7 @@ const storage = new CloudinaryStorage({
   params: {
     folder: "wander-lust_DEV", // The name of the folder in Cloudinary where images will be stored
     allowedFormats: ["png", "jpg", "jpeg"], // supports promises as well
+    resource_type: "image",
   },
 });
 

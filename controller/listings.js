@@ -1,4 +1,7 @@
+const { cloudinary } = require("../cloudConfig.js");
 const Listing = require("../models/listing");
+
+const mapToken = process.env.MAP_TOKEN;
 
 module.exports.index = async (req, res) => {
   const allListings = await Listing.find({});
@@ -17,7 +20,7 @@ module.exports.showListing = async (req, res) => {
       populate: { path: "author" }
     })
     .populate("owner");
-
+ 
   if (!listing) {
     req.flash("error", "Listing not found!");
     return res.redirect("/listings");
@@ -45,16 +48,26 @@ module.exports.editListing = async (req, res) => {
     req.flash("error", " Listing not found!"); // yaha se app.js me link hai
     res.redirect("/listings");
   }
-  res.render("listings/edit.ejs", { listing });
+  let originalImageUrl = listing.image.url;
+  originalImageUrl.replace("./upload/w_250");
+  res.render("listings/edit.ejs", { listing , originalImageUrl});
 }
 
 module.exports.updateListing = async (req, res) => {
   let { id } = req.params;
-  let listing = await Listing.findById(id);
-  req.flash("success", "Listing Updated!");
-  res.redirect(`/listings/${id}`);
-}
+  let listing = await Listing.findByIdAndUpdate(id, { ...req.body.listing});
+  console.log(req.file);
+  if (typeof req.file !=='undefined') {
+    let url = req.file.path;
+    let filename = req.file.filename;
+    listing.image = { url, filename };
+    await listing.save();
+  }
+  console.log(listing);
 
+  req.flash("success", "Listing Updated!");
+  res.redirect(`/listings/${listing._id}`);
+}
 module.exports.deleteListing = async (req, res) => {
   let { id } = req.params;
   let deletedListing = await Listing.findByIdAndDelete(id);
