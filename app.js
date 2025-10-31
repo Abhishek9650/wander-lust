@@ -25,7 +25,7 @@ const userRouter = require("./routes/user.js");
 
 // --------------------- DATABASE CONNECTION ---------------------
 
-const MONGO_URL = "mongodb://127.0.0.1:27017/wander-lust";
+const dbUrl = process.env.ATLASDB_URL;
 
 main()
   .then(() => {
@@ -36,13 +36,27 @@ main()
   });
 
 async function main() {
-  await mongoose.connect(MONGO_URL);
+  await mongoose.connect(dbUrl);
 }
 
 // --------------------- SESSION CONFIG ---------------------
 
+const store = MongoStore.create({
+  mongoUrl: dbUrl,
+  crypto: {
+    secret:process.env.SECRET,
+  },
+  touchAfter: 24*3600,
+});
+
+// aab humari session ki info mongostore mae save hogi
+
+store.on("error", (err)=>{
+  console.log("ERROR in MONGO SESSION STORE", err);
+});
 const sessionOptions = {
-  secret: "mysupersecretcode",
+  store,
+  secret: process.env.SECRET,
   resave: false,
   saveUninitialized: true,
   cookie: {
