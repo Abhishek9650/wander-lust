@@ -17,7 +17,7 @@ const passport = require("passport");
 const Localstrategy = require("passport-local");
 const User = require("./models/user.js");
 const MongoStore = require('connect-mongo');
-const MongoStore = require('connect-mongo');
+
 
 
 // --------------------- ROUTES IMPORT ---------------------
