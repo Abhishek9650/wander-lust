@@ -15,7 +15,7 @@ router
   .get(wrapAsync(listingController.index))
   .post(
     isLoggedIn,
-    upload.single('image'),
+    upload.single('listing[image]'),
     validateListing,  
     wrapAsync(listingController.createListing)
   );
@@ -30,7 +30,7 @@ router
   .put(
     isLoggedIn,
     isOwner,
-    upload.single('image'), // ✅ ADDED THIS LINE - used for updating image using multer upload from device
+    upload.single('listing[image]'), // ✅ ADDED THIS LINE - used for updating image using multer upload from device
     validateListing,
     wrapAsync(listingController.updateListing)
   )
