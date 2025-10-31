@@ -53,10 +53,9 @@ const store = MongoStore.create({
 
 // aab humari session ki info mongostore mae save hogi
 
-store.on("error", ()=>{
+store.on("error", (err)=>{
   console.log("ERROR in MONGO SESSION STORE", err);
 });
-
 const sessionOptions = {
   store,
   secret: process.env.SECRET,
