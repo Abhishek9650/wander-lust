@@ -129,10 +129,18 @@ body {
 .show-card {
     padding-left: 0;
     padding-right: 0;
+    width: auto !;
 }
 
 .review-card {
     border: #222222 1px solid;
     margin-bottom: 1rem;
     padding: 5px;
+}
+
+#map {
+      height: auto;
+      width: auto;
+      margin-top: 20px;
+      border-radius: 2rem;
 }

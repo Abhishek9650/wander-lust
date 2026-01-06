@@ -1,7 +1,12 @@
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
+
 const { cloudinary } = require("../cloudConfig.js");
 const Listing = require("../models/listing");
+const axios = require("axios");
 
-const mapToken = process.env.MAP_TOKEN;
+let ApiKey= process.env.MAP_API_KEY;
 
 module.exports.index = async (req, res) => {
   const allListings = await Listing.find({});
@@ -29,17 +34,35 @@ module.exports.showListing = async (req, res) => {
   res.render("listings/show.ejs", { listing, currUser: req.user });
 }
 
-module.exports.createListing = async (req, res) => {
-  let url = req.file.path;
-  let filename = req.file.filename;
 
+module.exports.createListing = async (req, res) => {
+
+  // 1) Get image upload details
+  const url = req.file.path;
+  const filename = req.file.filename;
+
+  // 2) Forward Geocoding using Positionstack
+  const location = req.body.listing.location;
+  const geoURL = `http://api.positionstack.com/v1/forward?access_key=${ApiKey}&query=${encodeURIComponent(location)}`;
+  const geoResponse = await axios.get(geoURL);
+  const geoData = geoResponse.data.data[0];   // first result
+
+  // 3) Create Listing
   const newListing = new Listing(req.body.listing);
-  newListing.owner = req.user._id; // setting the owner of the listing to the currently logged in user
-  newListing.image = { url, filename }; // setting the image of the listing to the uploaded file
+
+  newListing.owner = req.user._id;
+  newListing.image = { url, filename };
+
+  // 4) Save coordinates into geometry (VERY IMPORTANT lon, lat)
+  newListing.geometry = {
+    type: "Point",
+    coordinates: [geoData.longitude, geoData.latitude]
+  };
+
   await newListing.save();
   req.flash("success", "New Listing Created!");
-  res.redirect("/listings");
-}
+  res.redirect(`/listings/${newListing._id}`);
+};
 
 module.exports.editListing = async (req, res) => {
   let { id } = req.params;
